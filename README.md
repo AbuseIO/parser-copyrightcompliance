@@ -1,2 +1,1 @@
-# parser-copyrightcompliance
-AbuseIO parser for copyright-compliance.com
+AbuseIO parser-copyrightcompliance
