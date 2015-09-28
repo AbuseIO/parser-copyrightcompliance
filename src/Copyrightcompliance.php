@@ -31,13 +31,13 @@ class Copyrightcompliance extends Parser
     {
         // Generalize the local config based on the parser class name.
         $reflect = new ReflectionClass($this);
-        $configBase = 'parsers.' . $reflect->getShortName();
+        $this->configBase = 'parsers.' . $reflect->getShortName();
 
         Log::info(
             get_class($this) . ': Received message from: ' .
             $this->parsedMail->getHeader('from') . " with subject: '" .
             $this->parsedMail->getHeader('subject') . "' arrived at parser: " .
-            config("{$configBase}.parser.name")
+            config("{$this->configBase}.parser.name")
         );
 
         $events = [ ];
@@ -64,7 +64,17 @@ class Copyrightcompliance extends Parser
         }
 
         if (!empty($xmlReport) && $xmlReport = simplexml_load_string($xmlReport)) {
-            $feedName = 'default';
+            $this->feedName = 'default';
+
+            if (!$this->isKnownFeed()) {
+                return $this->failed(
+                    "Detected feed {$this->feedName} is unknown."
+                );
+            }
+
+            if (!$this->isEnabledFeed()) {
+                return $this->success($events);
+            }
 
             // Create a corrected array
             $xmlReport = json_encode($xmlReport);
@@ -73,36 +83,22 @@ class Copyrightcompliance extends Parser
             // Unset fields that are really crap
             unset($xmlReport['Source']['SubType']);
 
-            // Apply filters from configuration
-            foreach (config("{$configBase}.feeds.{$feedName}.filters") as $filter) {
-                unset($xmlReport[$filter]);
-            }
+            $report = $this->applyFilters($xmlReport['Source']);
 
-            $fields = $xmlReport['Source'];
-            $columns = array_filter(config("{$configBase}.feeds.{$feedName}.fields"));
-
-            if (count($columns) > 0) {
-                foreach ($columns as $column) {
-                    if (!isset($fields[$column])) {
-                        return $this->failed(
-                            "Required field ${column} is missing in the report or config is incorrect."
-                        );
-                    }
-                }
-            }
-
-            if (config("{$configBase}.feeds.{$feedName}.enabled") !== true) {
-                return $this->success($events);
+            if (!$this->hasRequiredFields($report)) {
+                return $this->failed(
+                    "Required field {$this->requiredField} is missing or the config is incorrect."
+                );
             }
 
             $event = [
-                'source'        => config("{$configBase}.parser.name"),
-                'ip'            => $fields['IP_Address'],
+                'source'        => config("{$this->configBase}.parser.name"),
+                'ip'            => $report['IP_Address'],
                 'domain'        => false,
                 'uri'           => false,
-                'class'         => config("{$configBase}.feeds.{$feedName}.class"),
-                'type'          => config("{$configBase}.feeds.{$feedName}.type"),
-                'timestamp'     => strtotime($fields['TimeStamp']),
+                'class'         => config("{$this->configBase}.feeds.{$this->feedName}.class"),
+                'type'          => config("{$this->configBase}.feeds.{$this->feedName}.type"),
+                'timestamp'     => strtotime($report['TimeStamp']),
                 'information'   => json_encode($xmlReport),
             ];
 
