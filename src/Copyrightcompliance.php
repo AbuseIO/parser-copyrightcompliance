@@ -2,9 +2,6 @@
 
 namespace AbuseIO\Parsers;
 
-use ReflectionClass;
-use Log;
-
 class Copyrightcompliance extends Parser
 {
     /**
@@ -13,7 +10,7 @@ class Copyrightcompliance extends Parser
     public function __construct($parsedMail, $arfMail)
     {
         // Call the parent constructor to initialize some basics
-        parent::__construct($parsedMail, $arfMail);
+        parent::__construct($parsedMail, $arfMail, $this);
     }
 
     /**
@@ -23,17 +20,6 @@ class Copyrightcompliance extends Parser
      */
     public function parse()
     {
-        // Generalize the local config based on the parser class name.
-        $reflect = new ReflectionClass($this);
-        $this->configBase = 'parsers.' . $reflect->getShortName();
-
-        Log::info(
-            get_class($this) . ': Received message from: ' .
-            $this->parsedMail->getHeader('from') . " with subject: '" .
-            $this->parsedMail->getHeader('subject') . "' arrived at parser: " .
-            config("{$this->configBase}.parser.name")
-        );
-
         // ACNS: Automated Copyright Notice System
         $foundAcnsFile = false;
 
@@ -42,6 +28,8 @@ class Copyrightcompliance extends Parser
             if (preg_match(config("{$this->configBase}.parser.report_file"), $attachment->filename) &&
                 $attachment->contentType == 'application/xml'
             ) {
+                $foundAcnsFile = true;
+
                 $xmlReport = $attachment->getContent();
 
                 $this->saveEvent($xmlReport);
@@ -52,14 +40,18 @@ class Copyrightcompliance extends Parser
         // in the body so we need to fallback to a body XML search if there was
         // nothing found in attachments.
         if ($foundAcnsFile === false) {
-            preg_match(
+            if (preg_match(
                 '/- - ---Start ACNS XML\n(.*)- - ---End ACNS XML/si',
                 $this->parsedMail->getMessageBody(),
                 $match
-            );
-            $xmlReport = $match[1];
+            )
+            ) {
+                $xmlReport = $match[1];
 
-            $this->saveEvent($xmlReport);
+                $this->saveEvent($xmlReport);
+            } else {
+                $this->warningCount++;
+            }
         }
 
         return $this->success();
