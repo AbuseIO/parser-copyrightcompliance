@@ -2,8 +2,9 @@
 
 return [
     'parser' => [
-        'name'          => 'IP-Echelon',
+        'name'          => 'Copyright Compliance',
         'enabled'       => true,
+        'report_file'   => '/^.*\.xml/i',
         'sender_map'    => [
             '/@copyright-compliance.com/',
         ],
