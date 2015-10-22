@@ -5,7 +5,7 @@ namespace AbuseIO\Parsers;
 class Copyrightcompliance extends Parser
 {
     /**
-     * Create a new Blocklistde instance
+     * Create a new Copyrightcompliance instance
      */
     public function __construct($parsedMail, $arfMail)
     {
