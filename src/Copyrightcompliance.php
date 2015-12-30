@@ -2,10 +2,17 @@
 
 namespace AbuseIO\Parsers;
 
+/**
+ * Class Copyrightcompliance
+ * @package AbuseIO\Parsers
+ */
 class Copyrightcompliance extends Parser
 {
     /**
      * Create a new Copyrightcompliance instance
+     *
+     * @param \PhpMimeMailParser\Parser $parsedMail phpMimeParser object
+     * @param array $arfMail array with ARF detected results
      */
     public function __construct($parsedMail, $arfMail)
     {
@@ -15,7 +22,7 @@ class Copyrightcompliance extends Parser
 
     /**
      * Parse attachments
-     * @return Array    Returns array with failed or success data
+     * @return array    Returns array with failed or success data
      *                  (See parser-common/src/Parser.php) for more info.
      */
     public function parse()
@@ -57,6 +64,11 @@ class Copyrightcompliance extends Parser
         return $this->success();
     }
 
+    /**
+     * Uses the XML to create events
+     *
+     * @param string $report_xml
+     */
     private function saveEvent($report_xml)
     {
         if (!empty($report_xml) && $report_xml = simplexml_load_string($report_xml)) {
