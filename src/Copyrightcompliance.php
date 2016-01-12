@@ -1,6 +1,7 @@
 <?php
 
 namespace AbuseIO\Parsers;
+use AbuseIO\Models\Incident;
 
 /**
  * Class Copyrightcompliance
@@ -82,16 +83,19 @@ class Copyrightcompliance extends Parser
                 $report = $this->applyFilters($report_raw['Source']);
                 if ($this->hasRequiredFields($report) === true) {
                     // Event has all requirements met, add!
-                    $this->events[] = [
-                        'source'        => config("{$this->configBase}.parser.name"),
-                        'ip'            => $report['IP_Address'],
-                        'domain'        => false,
-                        'uri'           => false,
-                        'class'         => config("{$this->configBase}.feeds.{$this->feedName}.class"),
-                        'type'          => config("{$this->configBase}.feeds.{$this->feedName}.type"),
-                        'timestamp'     => strtotime($report['TimeStamp']),
-                        'information'   => json_encode($report_raw),
-                    ];
+                    $incident = new Incident();
+                    $incident->source      = config("{$this->configBase}.parser.name");
+                    $incident->source_id   = false;
+                    $incident->ip          = $report['IP_Address'];
+                    $incident->domain      = false;
+                    $incident->uri         = false;
+                    $incident->class       = config("{$this->configBase}.feeds.{$this->feedName}.class");
+                    $incident->type        = config("{$this->configBase}.feeds.{$this->feedName}.type");
+                    $incident->timestamp   = strtotime($report['TimeStamp']);
+                    $incident->information = json_encode($report_raw);
+
+                    $this->events[] = $incident;
+
                 }
             }
         }
