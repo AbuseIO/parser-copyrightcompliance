@@ -1,6 +1,7 @@
 <?php
 
 namespace AbuseIO\Parsers;
+
 use AbuseIO\Models\Incident;
 
 /**
@@ -40,7 +41,7 @@ class Copyrightcompliance extends Parser
 
                 $xmlReport = $attachment->getContent();
 
-                $this->saveEvent($xmlReport);
+                $this->saveIncidents($xmlReport);
             }
         }
 
@@ -56,7 +57,7 @@ class Copyrightcompliance extends Parser
             ) {
                 $xmlReport = $match[1];
 
-                $this->saveEvent($xmlReport);
+                $this->saveIncident($xmlReport);
             } else {
                 $this->warningCount++;
             }
@@ -66,11 +67,11 @@ class Copyrightcompliance extends Parser
     }
 
     /**
-     * Uses the XML to create events
+     * Uses the XML to create incidents
      *
      * @param string $report_xml
      */
-    private function saveEvent($report_xml)
+    private function saveIncident($report_xml)
     {
         if (!empty($report_xml) && $report_xml = simplexml_load_string($report_xml)) {
             $this->feedName = 'default';
@@ -82,7 +83,7 @@ class Copyrightcompliance extends Parser
                 // Sanity check
                 $report = $this->applyFilters($report_raw['Source']);
                 if ($this->hasRequiredFields($report) === true) {
-                    // Event has all requirements met, add!
+                    // incident has all requirements met, add!
                     $incident = new Incident();
                     $incident->source      = config("{$this->configBase}.parser.name");
                     $incident->source_id   = false;
@@ -94,7 +95,7 @@ class Copyrightcompliance extends Parser
                     $incident->timestamp   = strtotime($report['TimeStamp']);
                     $incident->information = json_encode($report_raw);
 
-                    $this->events[] = $incident;
+                    $this->incidents[] = $incident;
 
                 }
             }
