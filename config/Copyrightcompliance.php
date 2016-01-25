@@ -16,7 +16,7 @@ return [
     'feeds' => [
         'default' => [
             'class'     => 'COPYRIGHT_INFRINGEMENT',
-            'type'      => 'Abuse',
+            'type'      => 'ABUSE',
             'enabled'   => true,
             'fields'    => [
                 'Type',
