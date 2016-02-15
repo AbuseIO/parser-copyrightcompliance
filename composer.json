@@ -1,7 +1,7 @@
 {
     "name": "abuseio/parser-copyrightcompliance",
     "description": "Parser addon for handling notifications from copyright-compliance.com",
-    "version": "1.3.1",
+    "version": "1.3.2",
     "keywords": ["laravel", "abuseio", "parser", "copyright-compliance.com"],
     "homepage": "http://abuse.io",
     "type": "library",
