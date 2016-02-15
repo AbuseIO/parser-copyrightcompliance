@@ -7,6 +7,7 @@ return [
         'report_file'   => '/^.*\.xml/i',
         'sender_map'    => [
             '/@copyright-compliance.com/',
+            '/noreply@p2p.copyright-notice.com/',
         ],
         'body_map'      => [
             //

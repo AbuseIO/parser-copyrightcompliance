@@ -57,6 +57,11 @@ class Copyrightcompliance extends Parser
             ) {
                 $xmlReport = $match[1];
 
+                $xmlReport = utf8_decode($xmlReport);
+                $xmlReport = preg_replace("/&(?!#?[a-z0-9]+;)/", "&amp;", $xmlReport);
+
+                $xmlReport = str_replace('<?xml version="1.0" encoding="UTF-8"?>', '', $xmlReport);
+
                 $this->saveIncident($xmlReport);
             } else {
                 $this->warningCount++;
