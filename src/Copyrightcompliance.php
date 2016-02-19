@@ -55,14 +55,23 @@ class Copyrightcompliance extends Parser
                 $match
             )
             ) {
-                $xmlReport = $match[1];
+                $xmlReport = trim($match[1]);
 
-                $xmlReport = utf8_decode($xmlReport);
                 $xmlReport = preg_replace("/&(?!#?[a-z0-9]+;)/", "&amp;", $xmlReport);
 
-                $xmlReport = str_replace('<?xml version="1.0" encoding="UTF-8"?>', '', $xmlReport);
+                $this->saveIncident($xmlReport);
+            } elseif (preg_match(
+                "/(<\?xml[^>]*>.*?<\/Infringement>)/is",
+                $this->parsedMail->getMessageBody(),
+                $match
+            )
+            ) {
+                $xmlReport = trim($match[1]);
+
+                $xmlReport = preg_replace("/&(?!#?[a-z0-9]+;)/", "&amp;", $xmlReport);
 
                 $this->saveIncident($xmlReport);
+
             } else {
                 $this->warningCount++;
             }
