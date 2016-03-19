@@ -103,7 +103,6 @@ class Copyrightcompliance extends Parser
                     $incident->source_id   = false;
                     $incident->ip          = $report['IP_Address'];
                     $incident->domain      = false;
-                    $incident->uri         = false;
                     $incident->class       = config("{$this->configBase}.feeds.{$this->feedName}.class");
                     $incident->type        = config("{$this->configBase}.feeds.{$this->feedName}.type");
                     $incident->timestamp   = strtotime($report['TimeStamp']);
