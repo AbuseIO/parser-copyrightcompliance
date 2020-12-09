@@ -8,7 +8,8 @@ return [
         'sender_map'    => [
             '/@copyright-compliance.com/',
             '/noreply@p2p.copyright-notice.com/',
-            '/notices@entura-international.co.uk/'
+            '/notices@entura-international.co.uk/',
+            '/p2p@.*\.copyright-notice.com/'
         ],
         'body_map'      => [
             //
