@@ -106,7 +106,7 @@ class Copyrightcompliance extends Parser
                     $incident->class       = config("{$this->configBase}.feeds.{$this->feedName}.class");
                     $incident->type        = config("{$this->configBase}.feeds.{$this->feedName}.type");
                     $incident->timestamp   = strtotime($report['TimeStamp']);
-                    $incident->information = json_encode($report_raw);
+                    $incident->information = json_encode($report);
 
                     $this->incidents[] = $incident;
 
