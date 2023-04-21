@@ -9,7 +9,8 @@ return [
             '/@copyright-compliance.com/',
             '/noreply@p2p.copyright-notice.com/',
             '/notices@entura-international.co.uk/',
-            '/p2p@.*\.copyright-notice.com/'
+            '/p2p@.*\.copyright-notice.com/',
+            '/p2p@copyright-notice.com/'
         ],
         'body_map'      => [
             //
